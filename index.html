@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n-key="page_title">विस्तृत व्यक्तित्व परीक्षण</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --primary-light: #e8f9fd;
+            --text-color: #34495e;
+            --light-gray: #dde4e9;
+            --white: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --whatsapp-green: #25D366;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(5px);
+            border-radius: 25px;
+            padding: 5px;
+            display: flex;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .lang-switcher button {
+            background: transparent;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .lang-switcher button:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .lang-switcher button.active {
+            background-color: var(--secondary-color);
+            color: var(--white);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            margin-top: 20px;
+            font-size: 2em;
+            font-weight: 600;
+        }
+
+        p {
+            font-size: 1.1em;
+            color: var(--text-color);
+        }
+
+        .section {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .section.active {
+            display: block;
+            opacity: 1;
+        }
+
+        #start-screen .icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .test-length-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .test-length-selector button {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .test-length-selector button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .test-length-selector button span {
+            margin-left: 5px;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: var(--light-gray);
+            border-radius: 10px;
+            height: 15px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+            transition: width 0.4s ease-in-out;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: attr(data-label);
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--white);
+            font-size: 0.8em;
+            font-weight: 500;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .question-block {
+            padding: 30px 20px;
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+            animation: fadeIn 0.7s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-block h3 {
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        input[type="radio"] {
+            display: none;
+        }
+
+        .options-container label {
+            background-color: var(--white);
+            border: 2px solid var(--light-gray);
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            font-weight: 500;
+            color: var(--text-color);
+            display: block;
+            text-align: center;
+        }
+
+        .options-container label:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="radio"]:checked + label {
+            background-color: var(--primary-light);
+            border-color: var(--secondary-color);
+            color: var(--secondary-color);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            border: none;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin-top: 30px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #result {
+            padding-top: 20px;
+        }
+
+        #result-type {
+            font-size: 4em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        #result-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        #result-tagline {
+            font-style: italic;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        #result-desc {
+            margin-bottom: 30px;
+            text-align: left;
+            padding: 0 10px;
+        }
+
+        #result-chars ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+
+        #result-chars ul li {
+            background-color: var(--primary-light);
+            border-left: 5px solid var(--secondary-color);
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            font-size: 0.95em;
+            color: var(--text-color);
+        }
+
+        #share-section {
+            border: 2px dashed var(--light-gray);
+            background-color: var(--primary-light);
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        #share-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        #userName {
+            width: calc(100% - 20px);
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 1em;
+            text-align: center;
+        }
+
+        #shareBtn {
+            background-color: var(--whatsapp-green);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 25px;
+            font-size: 1.1em;
+        }
+
+        #shareBtn svg {
+            fill: var(--white);
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .lang-switcher {
+                top: 10px;
+                right: 10px;
+                padding: 3px;
+            }
+
+            .lang-switcher button {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            p {
+                font-size: 0.95em;
+            }
+
+            .test-length-selector {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .test-length-selector button {
+                width: 100%;
+                padding: 12px 20px;
+            }
+
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+
+            #result-type {
+                font-size: 2.8em;
+            }
+
+            #result-title {
+                font-size: 1.4em;
+            }
+
+            .btn {
+                padding: 12px 25px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-switcher">
+        <button id="lang-hi" onclick="setLanguage('hi')">हिंदी</button>
+        <button id="lang-en" onclick="setLanguage('en')">English</button>
+        <button id="lang-ur" onclick="setLanguage('ur')">اردو</button>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1 data-i18n-key="header_title">विस्तृत व्यक्तित्व परीक्षण</h1>
+            <p data-i18n-key="header_subtitle">अपनी सच्ची क्षमता को अनलॉक करें</p>
+        </header>
+
+        <div id="start-screen" class="section active">
+            <div class="icon">🧭</div>
+            <h2 data-i18n-key="start_title">आपका व्यक्तित्व प्रकार क्या है؟</h2>
+            <p data-i18n-key="start_desc">इस व्यापक परीक्षण में अपनी गहरी विशेषताओं، वरीयताओं और संभावित करियर पथों की खोज करें۔</p>
+
+            <p class="mt-4" data-i18n-key="start_select_label">परीक्षा की लंबाई चुनें:</p>
+            <div class="test-length-selector">
+                <button onclick="startQuiz(10)">10 <span data-i18n-key="questions_label">प्रश्न</span></button>
+                <button onclick="startQuiz(20)">20 <span data-i18n-key="questions_label">प्रश्न</span></button>
+                <button onclick="startQuiz(30)">30 <span data-i18n-key="questions_label">प्रश्न</span></button>
+            </div>
+        </div>
+
+        <div class="progress-container section" id="progressContainer">
+            <div class="progress-bar" id="progressBar" data-label="0%"></div>
+        </div>
+
+        <form id="quizForm" class="section"></form>
+
+        <div id="resultBtnContainer" class="section">
+            <button class="btn" onclick="calculateResult()" data-i18n-key="view_results_button">परिणाम देखें</button>
+        </div>
+
+        <div id="result" class="section">
+            <h2 data-i18n-key="result_heading">आपका व्यक्तित्व प्रकार है:</h2>
+            <div id="result-type"></div>
+            <div id="result-title"></div>
+            <p id="result-tagline"></p>
+            <p id="result-desc"></p>
+            <div id="result-chars">
+                <ul></ul>
+            </div>
+
+            <div id="share-section">
+                <h3 data-i18n-key="share_section_heading">अपने परिणाम साझा करें!</h3>
+                <input type="text" id="userName" data-i18n-placeholder-key="name_placeholder" placeholder="अपना नाम दर्ज करें (वैकल्पिक)">
+                <button id="shareBtn" class="btn" onclick="shareOnWhatsApp()">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.5 3.48 1.48 4.96l-1.63 5.96 6.1-1.61c1.4-.28 2.8-.41 4.2-.41h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zm.04 1.6c4.5 0 8.16 3.66 8.16 8.16 0 4.5-3.66 8.16-8.16 8.16-.01 0-.02 0-.03 0-1.22.04-2.45.16-3.6.35l-2.45.64 1.25-4.57c-.69-1.2-1.05-2.58-1.05-4.01 0-4.5 3.66-8.16 8.16-8.16zm-3.3 5.3c-.22 0-.44.05-.63.14-.19.09-.34.22-.46.39l-.02.02c-.37.5-.54 1.1-.54 1.73 0 .7.18 1.34.54 1.83.3.4.74.7 1.22.86.48.16.98.24 1.5.24.58 0 1.13-.08 1.63-.23.5-.15.9-.35 1.2-.6.3-.26.54-.56.73-.89.19-.34.29-.7.29-1.07 0-.39-.08-.75-.24-1.07-.17-.32-.4-.6-.69-.8-.28-.2-.6-.35-.95-.45-.36-.1-.73-.14-1.12-.14-.4 0-.78.04-1.14.13-.36.09-.67.2-.95.32zM12.56 12.3c-.02-.01-.05-.01-.07-.01-.32 0-.63-.08-.9-.24-.27-.16-.49-.38-.64-.64-.15-.27-.23-.58-.23-.92s.08-.66.23-.92c.15-.27.37-.49.64-.64.27-.16.58-.24.9-.24.32 0 .63.08.9.24.27.16.49.38.64.64.15.27.23.58.23.92s-.08.66-.23.92c-.15.27-.37-.49-.64-.64-.27-.16-.58-.24-.9-.24z"/>
+                    </svg>
+                    <span data-i18n-key="share_button">WhatsApp پر साझा करें</span>
+                </button>
+            </div>
+
+            <button class="btn mt-4" onclick="resetQuiz()" data-i18n-key="start_over_button">پھر سے شروع کریں</button>
+        </div>
+    </div>
+
+    <script>
+        // i18n Object for English and Hindi text
+        const i18n = {
+            en: {
+                page_title: "Detailed Personality Test",
+                header_title: "Detailed Personality Test",
+                header_subtitle: "Unlock Your True Potential",
+                start_title: "What's Your Personality Type?",
+                start_desc: "Discover your deeper characteristics, preferences, and potential career paths with this comprehensive test.",
+                start_select_label: "Choose test length:",
+                questions_label: "Questions",
+                view_results_button: "View Results",
+                result_heading: "Your Personality Type Is:",
+                share_section_heading: "Share Your Results!",
+                name_placeholder: "Enter Your Name (Optional)",
+                share_button: "Share on WhatsApp",
+                start_over_button: "Start Over",
+                alert_confirm_lang_change: "Changing the language will reset the quiz. Do you want to proceed?",
+                alert_answer_all_questions: "Please answer all questions before viewing results.",
+                score_A_text: "Strongly Agree",
+                score_B_text: "Agree",
+                score_C_text: "Disagree",
+                score_D_text: "Strongly Disagree",
+                whatsapp_share_message_name: (name, type, title, tagline) => `${name ? name + "'s" : "My"} Personality Test Result:
+My type is *${type}* - ${title}!
+"${tagline}"
+
+Take the test yourself: ${window.location.href}`,
+                whatsapp_share_message_noname: (type, title, tagline) => `My Personality Test Result:
+My type is *${type}* - ${title}!
+"${tagline}"
+
+Take the test yourself: ${window.location.href}`
+            },
+            hi: {
+                page_title: "विस्तृत व्यक्तित्व परीक्षण",
+                header_title: "विस्तृत व्यक्तित्व परीक्षण",
+                header_subtitle: "अपनी सच्ची क्षमता को अनलॉक करें",
+                start_title: "आपका व्यक्तित्व प्रकार क्या है?",
+                start_desc: "इस व्यापक परीक्षण में अपनी गहरी विशेषताओं, वरीयताओं और संभावित करियर पथों की खोज करें।",
+                start_select_label: "परीक्षा की लंबाई चुनें:",
+                questions_label: "प्रश्न",
+                view_results_button: "परिणाम देखें",
+                result_heading: "आपका व्यक्तित्व प्रकार है:",
+                share_section_heading: "अपने परिणाम साझा करें!",
+                name_placeholder: "अपना नाम दर्ज करें (वैकल्पिक)",
+                share_button: "WhatsApp पर साझा करें",
+                start_over_button: "फिर से शुरू करें",
+                alert_confirm_lang_change: "भाषा बदलने से क्विज़ रीसेट हो जाएगा। क्या आप आगे बढ़ना चाहते हैं?",
+                alert_answer_all_questions: "परिणाम देखने से पहले कृपया सभी प्रश्नों के उत्तर दें।",
+                score_A_text: "दृढ़ता से सहमत",
+                score_B_text: "सहमत",
+                score_C_text: "असहमत",
+                score_D_text: "दृढ़ता से असहमत",
+                whatsapp_share_message_name: (name, type, title, tagline) => `${name ? name + ' का' : 'मेरा'} व्यक्तित्व परीक्षण परिणाम:
+मेरा प्रकार *${type}* है - ${title}!
+"${tagline}"
+
+परीक्षा स्वयं लें: ${window.location.href}`,
+                whatsapp_share_message_noname: (type, title, tagline) => `मेरा व्यक्तित्व परीक्षण परिणाम:
+मेरा प्रकार *${type}* है - ${title}!
+"${tagline}"
+
+परीक्षा स्वयं लें: ${window.location.href}`
+            },
+            ur: {
+                page_title: "جامع شخصیت کا امتحان",
+                header_title: "جامع شخصیت کا امتحان",
+                header_subtitle: "اپنی حقیقی صلاحیتوں کو جانیں",
+                start_title: "آپ کی شخصیت کی قسم کیا ہے؟",
+                start_desc: "اس جامع امتحان کے ذریعے اپنی گہری خصوصیات، ترجیحات اور ممکنہ کیریئر کے راستوں کو دریافت کریں۔",
+                start_select_label: "امتحان کی لمبائی کا انتخاب کریں:",
+                questions_label: "سوالات",
+                view_results_button: "نتائج دیکھیں",
+                result_heading: "آپ کی شخصیت کی قسم ہے:",
+                share_section_heading: "اپنے نتائج کا اشتراک کریں!",
+                name_placeholder: "اپنا نام درج کریں (اختیاری)",
+                share_button: "واٹس ایپ پر شیئر کریں",
+                start_over_button: "دوبارہ شروع کریں",
+                alert_confirm_lang_change: "زبان تبدیل کرنے سے کوئز دوبارہ سیٹ ہو جائے گا۔ کیا آپ جاری رکھنا چاہتے ہیں؟",
+                alert_answer_all_questions: "نتائج دیکھنے سے پہلے براہ کرم تمام سوالات کے جوابات دیں۔",
+                score_A_text: "مکمل طور پر متفق",
+                score_B_text: "متفق",
+                score_C_text: "اختلاف",
+                score_D_text: "مکمل طور پر اختلاف",
+                whatsapp_share_message_name: (name, type, title, tagline) => `${name ? name + ' کا' : 'میری'} شخصیت ٹیسٹ کا نتیجہ:
+میری قسم *${type}* ہے - ${title}!
+"${tagline}"
+
+خود ٹیسٹ لیں: ${window.location.href}`,
+                whatsapp_share_message_noname: (type, title, tagline) => `میری شخصیت ٹیسٹ کا نتیجہ:
+میری قسم *${type}* ہے - ${title}!
+"${tagline}"
+
+خود ٹیسٹ لیں: ${window.location.href}`
+            }
+        };
+
+        // personalityTypes Object for all 16 result descriptions
+        const personalityTypes = {
+            "ISTJ": {
+                title: { en: "The Logistician", hi: "द लॉजिस्टिशियन", ur: "دی لاجسٹیشن" },
+                tagline: { en: "Practical and fact-minded individuals.", hi: "व्यावहारिक और तथ्य-उन्मुख व्यक्ति।", ur: "عملی اور حقیقت پسند افراد۔" },
+                description: { en: "ISTJs are responsible organizers, driven by a deep sense of duty. They are reserved, practical, and systematic, often excelling in fields that require precision and reliability. They value tradition and order, and can be counted on to follow through on their commitments. They are observant and have an excellent memory for facts.", hi: "आईएसटीजे जिम्मेदार आयोजक होते हैं، जो कर्तव्य की गहरी भावना से प्रेरित होते हैं। वे आरक्षित, व्यावहारिक और व्यवस्थित होते हैं، अक्सर ऐसे क्षेत्रों में उत्कृष्ट प्रदर्शन करते हैं जिनमें सटीकता और विश्वसनीयता की आवश्यकता होती है। वे परंपरा और व्यवस्था को महत्व देते ہیں، और अपनी प्रतिबद्धताओं को पूरा करने के लिए उन पर भरोसा किया जा सकता है। वे चौकस होते ہیں اور तथ्यों के लिए उनकी याददाश्त उत्कृष्ट होती है۔", ur: "آئی ایس ٹی جیز ذمہ دار منتظمین ہوتے ہیں، جو فرض کے گہرے احساس سے متاثر ہوتے ہیں۔ وہ محتاط، عملی اور منظم ہوتے ہیں، اکثر ایسے شعبوں میں بہترین کارکردگی دکھاتے ہیں جن میں درستگی اور قابل اعتمادی کی ضرورت ہوتی ہے۔ وہ روایت اور نظم کو اہمیت دیتے ہیں، اور اپنی ذمہ داریوں کو پورا کرنے کے لیے ان پر بھروسہ کیا جا سکتا ہے۔ وہ مشاہدہ کرنے والے ہوتے ہیں اور حقائق کے لیے ان کی یادداشت بہترین ہوتی ہے۔" },
+                characteristics: {
+                    en: [
+                        "Practical and realistic",
+                        "Orderly and traditional",
+                        "Responsible and dependable",
+                        "Detail-oriented",
+                        "Calm and reserved"
+                    ],
+                    hi: [
+                        "व्यावहारिक और यथार्थवादी",
+                        "व्यवस्थित और पारंपरिक",
+                        "जिम्मेदार और भरोसेमंद",
+                        "विस्तार-उन्मुख",
+                        "शांत और आरक्षित"
+                    ],
+                    ur: [
+                        "عملی اور حقیقت پسند",
+                        "منظم اور روایتی",
+                        "ذمہ دار اور قابل اعتماد",
+                        "تفصیل پر مبنی",
+                        "پرسکون اور محتاط"
+                    ]
+                }
+            },
+            "ISFJ": {
+                title: { en: "The Defender", hi: "द डिफेंडर", ur: "دی ڈیفنڈر" },
+                tagline: { en: "Warm, unassuming, and meticulous caregivers.", hi: "गर्मजोशी से भरे, विनम्र और सावधानीपूर्वक देखभाल करने वाले।", ur: "گرم جوشی، سادہ اور محتاط دیکھ بھال کرنے والے۔" },
+                description: { en: "ISFJs are dedicated and warm protectors. They are selfless, empathetic, and always ready to help others, often prioritizing the needs of their loved ones. They are highly organized and diligent, paying great attention to detail. ISFJs thrive in roles where they can offer practical support and maintain harmony.", hi: "आईएसएफजे समर्पित और गर्मजोशी से भरे संरक्षक होते हैं। वे निस्वार्थ, सहानुभूतिपूर्ण और हमेशा दूसरों की मदद के लिए तैयार रहते हैं، अक्सर अपने प्रियजनों की जरूरतों को प्राथमिकता देते हैं। वे अत्यधिक व्यवस्थित और मेहनती होते हैं، विस्तार पर बहुत ध्यान देते हैं। आईएसएफजे उन भूमिकाओं में पनपते हैं जहाँ वे व्यावहारिक सहायता प्रदान कर सकते हैं और सद्भाव बनाए रख सकते हैं।", ur: "آئی ایس ایف جیز وقف اور گرم جوشی والے محافظ ہوتے ہیں۔ وہ بے لوث، ہمدرد اور ہمیشہ دوسروں کی مدد کے لیے تیار رہتے ہیں، اکثر اپنے پیاروں کی ضروریات کو ترجیح دیتے ہیں۔ وہ انتہائی منظم اور محنتی ہوتے ہیں، تفصیل پر بہت زیادہ توجہ دیتے ہیں۔ آئی ایس ایف جیز ان کرداروں میں کامیاب ہوتے ہیں جہاں وہ عملی مدد فراہم کر سکیں اور ہم آہنگی برقرار رکھ سکیں۔" },
+                characteristics: {
+                    en: [
+                        "Supportive and loyal",
+                        "Patient and empathetic",
+                        "Practical and observant",
+                        "Organized and diligent",
+                        "Humble and caring"
+                    ],
+                    hi: [
+                        "सहायक और वफादार",
+                        "धैर्यवान और सहानुभूतिपूर्ण",
+                        "व्यावहारिक और चौकस",
+                        "व्यवस्थित और मेहनती",
+                        "विनम्र और देखभाल करने वाला"
+                    ],
+                    ur: [
+                        "مددگار اور وفادار",
+                        "صبر اور ہمدرد",
+                        "عملی اور مشاہدہ کرنے والا",
+                        "منظم اور محنتی",
+                        "عاجز اور مہربان"
+                    ]
+                }
+            },
+            "INFJ": {
+                title: { en: "The Advocate", hi: "द एडवोकेट", ur: "دی ایڈوکیٹ" },
+                tagline: { en: "Quiet and mystical, yet very inspiring and tireless idealists.", hi: "शांत और रहस्यमय, फिर भी बहुत प्रेरणादायक और अथक आदर्शवादी।", ur: "خاموش اور پراسرار، پھر بھی بہت متاثر کن اور بے پناہ مثالی۔" },
+                description: { en: "INFJs are insightful and principled idealists. They possess a deep sense of moral integrity and are driven by a desire to help others and improve the world. Though quiet and reserved, they are profoundly empathetic and can connect with people on a deep emotional level. They are visionary and often pursue humanitarian causes.", hi: "आईएनएफजे अंतर्दृष्टिपूर्ण और सिद्धांतवादी आदर्शवादी होते हैं। उनमें नैतिक अखंडता की गहरी भावना होती है और वे दूसरों की मदद करने और दुनिया को बेहतर बनाने की इच्छा से प्रेरित होते हैं। हालांकि शांत और आरक्षित, वे गहराई से सहानुभूतिपूर्ण होते हैं और लोगों के साथ गहरे भावनात्मक स्तर पर जुड़ सकते हैं। वे दूरदर्शी होते हैं और अक्सर मानवीय कारणों का पीछा करते हैं।", ur: "آئی این ایف جیز گہری بصیرت رکھنے والے اور اصول پسند مثالی ہوتے ہیں۔ ان میں اخلاقی سالمیت کا گہرا احساس ہوتا ہے اور وہ دوسروں کی مدد کرنے اور دنیا کو بہتر بنانے کی خواہش سے متاثر ہوتے ہیں۔ اگرچہ خاموش اور محتاط، وہ گہری ہمدردی رکھتے ہیں اور لوگوں کے ساتھ گہرے جذباتی سطح پر جڑ سکتے ہیں۔ وہ بصیرت والے ہوتے ہیں اور اکثر انسانیت کی وجوہات کا پیچھا کرتے ہیں۔" },
+                characteristics: {
+                    en: [
+                        "Insightful and intuitive",
+                        "Principled and idealistic",
+                        "Empathetic and compassionate",
+                        "Creative and visionary",
+                        "Determined and reserved"
+                    ],
+                    hi: [
+                        "अंतर्दृष्टिपूर्ण और सहज",
+                        "सिद्धांतवादी और आदर्शवादी",
+                        "सहानुभूतिपूर्ण और दयालु",
+                        "रचनात्मक और दूरदर्शी",
+                        "दृढ़ और आरक्षित"
+                    ],
+                    ur: [
+                        "بصیرت افروز اور بدیہی",
+                        "اصولی اور مثالی",
+                        "ہمدرد اور رحم دل",
+                        "تخلیقی اور بصیرت والا",
+                        "مصمم اور محتاط"
+                    ]
+                }
+            },
+            "INTJ": {
+                title: { en: "The Architect", hi: "द आर्किटेक्ट", ur: "دی آرکیٹیکٹ" },
+                tagline: { en: "Imaginative and strategic thinkers with a plan for everything.", hi: "हर चीज के लिए एक योजना के साथ कल्पनाशील और रणनीतिक विचारक।", ur: "ہر چیز کے لیے ایک منصوبہ رکھنے والے تصوراتی اور اسٹریٹجک مفکرین۔" },
+                description: { en: "INTJs are independent and strategic thinkers. They are highly rational, analytical, and enjoy devising brilliant long-term plans. They are driven by an insatiable thirst for knowledge and improvement, constantly seeking to understand and master complex systems. They are often perceived as reserved, but their minds are always active, processing information and formulating new ideas.", hi: "आईएनटीजे स्वतंत्र और रणनीतिक विचारक होते हैं। वे अत्यधिक तर्कसंगत, विश्लेषणात्मक होते हैं، और शानदार दीर्घकालिक योजनाएँ बनाने का आनंद लेते हैं। वे ज्ञान और सुधार के लिए एक अथक प्यास से प्रेरित होते हैं، लगातार जटिल प्रणालियों को समझने और उनमें महारत हासिल करने की कोशिश करते हैं। उन्हें अक्सर आरक्षित माना जाता है، लेकिन उनके दिमाग हमेशा सक्रिय रहते हैं، जानकारी को संसाधित करते हैं और नए विचार तैयार करते हैं।", ur: "آئی این ٹی جیز آزاد اور اسٹریٹجک مفکرین ہوتے ہیں۔ وہ انتہائی منطقی، تجزیاتی ہوتے ہیں، اور شاندار طویل مدتی منصوبے تیار کرنے سے لطف اند اندوز ہوتے ہیں۔ وہ علم اور بہتری کے لیے بے پناہ پیاس سے متاثر ہوتے ہیں، مسلسل پیچیدہ نظاموں کو سمجھنے اور ان پر مہارت حاصل کرنے کی کوشش کرتے ہیں۔ انہیں اکثر محتاط سمجھا جاتا ہے، لیکن ان کے ذہن ہمیشہ فعال رہتے ہیں، معلومات پر کارروائی کرتے ہیں اور نئے خیالات وضع کرتے ہیں۔" },
+                characteristics: {
+                    en: [
+                        "Strategic and independent",
+                        "Logical and rational",
+                        "Visionary and innovative",
+                        "Knowledge-seeking",
+                        "Confident and decisive"
+                    ],
+                    hi: [
+                        "रणनीतिक और स्वतंत्र",
+                        "तार्किक और तर्कसंगत",
+                        "दूरदर्शी और नवीन",
+                        "ज्ञान-खोजने वाला",
+                        "आत्मविश्वासी और निर्णायक"
+                    ],
+                    ur: [
+                        "اسٹریٹجک اور آزاد",
+                        "منطقی اور عقلی",
+                        "بصیرت والا اور اختراعی",
+                        "علم کی تلاش",
+                        "بھروسہ مند اور فیصلہ کن"
+                    ]
+                }
+            },
+            "ISTP": {
+                title: { en: "The Virtuoso", hi: "द वर्चुओसो", ur: "دی ورچوسو" },
+                tagline: { en: "Bold and practical experimenters, masters of all kinds of tools.", hi: "साहसी और व्यावहारिक प्रयोगकर्ता, सभी प्रकार के उपकरणों के स्वामी।", ur: "دلیر اور عملی تجربہ کار، ہر قسم کے اوزاروں کے ماہر۔" },
+                description: { en: "ISTPs are bold and practical problem-solvers. They are curious and independent, enjoying hands-on experiences and learning through doing. They are logical and adaptable, able to quickly analyze situations and come up with practical solutions. ISTPs are often skilled with tools and mechanics, thriving in environments where they can apply their technical expertise.", hi: "आईएसटीपी साहसी और व्यावहारिक समस्या-समाधानकर्ता होते हैं। वे जिज्ञासु और स्वतंत्र होते हैं، हाथों से अनुभव करने और करके सीखने का आनंद लेते हैं। वे तार्किक और अनुकूलनीय होते हैं، स्थितियों का शीघ्रता से विश्लेषण करने और व्यावहारिक समाधान निकालने में सक्षम होते हैं। आईएसटीपी अक्सर उपकरणों और यांत्रिकी में कुशल होते हैं، ऐसे वातावरण में पनपते हैं जहाँ वे अपनी तकनीकी विशेषज्ञता लागू कर सकते हैं।", ur: "آئی ایس ٹی پیز دلیر اور عملی مسئلہ حل کرنے والے ہوتے ہیں۔ وہ متجسس اور آزاد ہوتے ہیں، ہاتھوں سے تجربات کرنے اور کرکے سیکھنے سے لطف اندوز ہوتے ہیں۔ وہ منطقی اور قابل موافق ہوتے ہیں، حالات کا فوری تجزیہ کرنے اور عملی حل نکالنے کے قابل ہوتے ہیں۔ آئی ایس ٹی پیز اکثر اوزاروں اور میکانکس میں ماہر ہوتے ہیں، ایسے ماحول میں کامیاب ہوتے ہیں جہاں وہ اپنی تکنیکی مہارت کا اطلاق کر سکیں۔" },
+                characteristics: {
+                    en: [
+                        "Practical and analytical",
+                        "Independent and adaptable",
+                        "Curious and observant",
+                        "Action-oriented",
+                        "Calm under pressure"
+                    ],
+                    hi: [
+                        "व्यावहारिक और विश्लेषणात्मक",
+                        "स्वतंत्र और अनुकूलनीय",
+                        "जिज्ञासु और चौकस",
+                        "कार्य-उन्मुख",
+                        "दबाव में शांत"
+                    ],
+                    ur: [
+                        "عملی اور تجزیاتی",
+                        "آزاد اور قابل موافق",
+                        "متجسس اور مشاہدہ کرنے والا",
+                        "عمل پر مبنی",
+                        "دباؤ میں پرسکون"
+                    ]
+                }
+            },
+            "ISFP": {
+                title: { en: "The Adventurer", hi: "द एडवेंचरर", ur: "دی ایڈونچر" },
+                tagline: { en: "Flexible and charming artists, always ready to explore and experience new things.", hi: "लचीले और आकर्षक कलाकार, हमेशा नई चीजों का पता लगाने और अनुभव करने के लिए तैयार।", ur: "لچکدار اور دلکش فنکار، ہمیشہ نئی چیزوں کو تلاش کرنے اور تجربہ کرنے کے لیے تیار۔" },
+                description: { en: "ISFPs are gentle and spontaneous artists. They are deeply connected to their senses and the present moment, appreciating beauty and harmony in the world around them. They are open-minded, flexible, and value personal freedom and authenticity. ISFPs often express themselves through creative outlets and enjoy exploring new experiences.", hi: "आईएसएफपी कोमल और सहज कलाकार होते हैं। वे अपनी इंद्रियों और वर्तमान क्षण से गहराई से जुड़े होते हैं، अपने आस-पास की दुनिया में सुंदरता और सद्भाव की सराहना करते हैं। वे खुले विचारों वाले, लचीले और व्यक्तिगत स्वतंत्रता और प्रामाणिकता को महत्व देते हैं। आईएसएफपी अक्सर रचनात्मक माध्यमों से खुद को अभिव्यक्त करते हैं और नए अनुभवों की खोज का आनंद लेते हैं।", ur: "آئی ایس ایف پیز نرم مزاج اور خود بخود فنکار ہوتے ہیں۔ وہ اپنے حواس اور موجودہ لمحے سے گہرائی سے جڑے ہوتے ہیں، اپنے ارد گرد کی دنیا میں خوبصورتی اور ہم آہنگی کی تعریف کرتے ہیں۔ وہ کھلے ذہن، لچکدار اور ذاتی آزادی اور صداقت کو اہمیت دیتے ہیں۔ آئی ایس ایف پیز اکثر تخلیقی طریقوں سے اپنے آپ کا اظہار کرتے ہیں اور نئے تجربات کی تلاش کا لطف اٹھاتے ہیں۔" },
+                characteristics: {
+                    en: [
+                        "Artistic and creative",
+                        "Spontaneous and flexible",
+                        "Sensitive and empathetic",
+                        "Observant and grounded",
+                        "Value personal freedom"
+                    ],
+                    hi: [
+                        "कलात्मक और रचनात्मक",
+                        "सहज और लचीला",
+                        "संवेदनशील और सहानुभूतिपूर्ण",
+                        "चौकस और जमीन से जुड़ा",
+                        "व्यक्तिगत स्वतंत्रता को महत्व दें"
+                    ],
+                    ur: [
+                        "فنکارانہ اور تخلیقی",
+                        "خود بخود اور لچکدار",
+                        "حساس اور ہمدرد",
+                        "مشاہدہ کرنے والا اور زمین سے جڑا ہوا",
+                        "ذاتی آزادی کو اہمیت دیں"
+                    ]
+                }
+            },
+            "INFP": {
+                title: { en: "The Mediator", hi: "द मीडिएटर", ur: "دی میڈی ایٹر" },
+                tagline: { en: "Poetic, kind and altruistic people, always eager to help a good cause.", hi: "कवि, दयालु और परोपकारी लोग, हमेशा एक अच्छे उद्देश्य में मदद करने के लिए उत्सुक।", ur: "شاعری، مہربان اور دوسروں کی بھلائی چاہنے والے لوگ، ہمیشہ ایک اچھے مقصد میں مدد کے لیے بے تاب۔" },
+                description: { en: "INFPs are imaginative and compassionate idealists. They are driven by their core values and a desire to find meaning and purpose in life. Though quiet, they possess a strong sense of empathy and strive to create a better world for everyone. They are creative, adaptable, and open-minded, often pursuing careers in writing, art, or counseling.", hi: "आईएनएफपी कल्पनाशील और दयालु आदर्शवादी होते हैं। वे अपने मूल मूल्यों और जीवन में अर्थ और उद्देश्य खोजने की इच्छा से प्रेरित होते हैं। हालांकि शांत، उनमें सहानुभूति की एक मजबूत भावना होती है और वे सभी के लिए एक बेहतर दुनिया बनाने का प्रयास करते हैं। वे रचनात्मक, अनुकूलनीय और खुले विचारों वाले होते हैं، अक्सर लेखन, कला या परामर्श में करियर बनाते हैं।", ur: "آئی این ایف پیز تصوراتی اور ہمدرد مثالی ہوتے ہیں۔ وہ اپنی بنیادی اقدار اور زندگی میں معنی و مقصد تلاش کرنے کی خواہش سے متاثر ہوتے ہیں۔ اگرچہ خاموش، ان میں ہمدردی کا ایک مضبوط احساس ہوتا ہے اور وہ سب کے لیے ایک بہتر دنیا بنانے کی کوشش کرتے ہیں۔ وہ تخلیقی، قابل موافق اور کھلے ذہن والے ہوتے ہیں، اکثر تحریر، فن یا مشاورت میں کیریئر بناتے ہیں۔" },
+                characteristics: {
+                    en: [
+                        "Idealistic and empathetic",
+                        "Creative and imaginative",
+                        "Value authenticity",
+                        "Flexible and accepting",
+                        "Deeply reflective"
+                    ],
+                    hi: [
+                        "आदर्शवादी और सहानुभूतिपूर्ण",
+                        "रचनात्मक और कल्पनाशील",
+                        "प्रामाणिकता को महत्व दें",
+                        "लचीला और स्वीकार करने वाला",
+                        "गहराई से विचारशील"
+                    ],
+                    ur: [
+                        "مثالی اور ہمدرد",
+                        "تخلیقی اور تصوراتی",
+                        "اصلیت کو اہمیت دیں",
+                        "لچکدار اور قبول کرنے والا",
+                        "گہرائی سے غور و فکر کرنے والا"
+                    ]
+                }
+            },
+            "INTP": {
+                title: { en: "The Logician", hi: "द लॉजिशियन", ur: "دی لاجیشین" },
+                tagline: { en: "Innovative inventors with an unquenchable thirst for knowledge.", hi: "ज्ञान की अदम्य प्यास वाले नवीन आविष्कारक।", ur: "علم کی نہ بجھنے والی پیاس رکھنے والے اختراعی موجد۔" },
+                description: { en: "INTPs are innovative and analytical thinkers. They are driven by logic and a deep curiosity to understand how things work. They are independent, intellectual, and often prefer to work alone, exploring complex theories and abstract concepts. INTPs are excellent problem-solvers and enjoy debating ideas.", hi: "आईएनटीपी नवीन और विश्लेषणात्मक विचारक होते हैं। वे तर्क और चीजों के काम करने के तरीके को समझने की गहरी जिज्ञासा से प्रेरित होते हैं। वे स्वतंत्र, बौद्धिक होते हैं، और अक्सर अकेले काम करना पसंद करते हैं، जटिल सिद्धांतों और अमूर्त अवधारणाओं की खोज करते हैं। आईएनटीपी उत्कृष्ट समस्या-समाधानकर्ता होते हैं और विचारों पर बहस करने का आनंद लेते हैं।", ur: "آئی این ٹی پیز اختراعی اور تجزیاتی مفکرین ہوتے ہیں۔ وہ منطق اور چیزوں کے کام کرنے کے طریقے کو سمجھنے کی گہری تجسس سے متاثر ہوتے ہیں۔ وہ آزاد، فکری ہوتے ہیں، اور اکثر تنہا کام کرنا پسند کرتے ہیں، پیچیدہ نظریات اور خلاصہ تصورات کی تلاش کرتے ہیں۔ آئی این ٹی پیز بہترین مسئلہ حل کرنے والے ہوتے ہیں اور خیالات پر بحث کرنے سے لطف اندوز ہوتے ہیں۔" },
+                characteristics: {
+                    en: [
+                        "Analytical and logical",
+                        "Independent and curious",
+                        "Innovative and theoretical",
+                        "Objective and precise",
+                        "Value knowledge and truth"
+                    ],
+                    hi: [
+                        "विश्लेषणात्मक और तार्किक",
+                        "स्वतंत्र और जिज्ञासु",
+                        "नवीन और सैद्धांतिक",
+                        "उद्देश्यपूर्ण और सटीक",
+                        "ज्ञान और सत्य को महत्व दें"
+                    ],
+                    ur: [
+                        "تجزیاتی اور منطقی",
+                        "آزاد اور متجسس",
+                        "اختراعی اور نظریاتی",
+                        "معروضی اور درست",
+                        "علم اور سچائی کو اہمیت دیں"
+                    ]
+                }
+            },
+            "ESTJ": {
+                title: { en: "The Executive", hi: "द एग्जीक्यूटिव", ur: "دی ایگزیکٹو" },
+                tagline: { en: "Excellent administrators, unsurpassed at managing things or people.", hi: "उत्कृष्ट प्रशासक, चीजों या लोगों के प्रबंधन में अप्रतिम।", ur: "عمدہ منتظمین، چیزوں یا لوگوں کو سنبھالنے میں بے مثال۔" },
+                description: { en: "ESTJs are strong-willed and traditional leaders. They are highly organized, practical, and efficient, excelling at managing projects and people. They value order, tradition, and hard work, and are often seen as pillars of their communities. ESTJs are decisive and dependable, always aiming to get things done effectively.", hi: "ईएसटीजे दृढ़ इच्छाशक्ति वाले और पारंपरिक नेता होते हैं। वे अत्यधिक व्यवस्थित, व्यावहारिक और कुशल होते हैं، परियोजनाओं और लोगों के प्रबंधन में उत्कृष्ट प्रदर्शन करते हैं। वे व्यवस्था, परंपरा और कड़ी मेहनत को महत्व देते، और अक्सर अपने समुदायों के स्तंभ के रूप में देखे जाते हैं। ईएसटीजे निर्णायक और भरोसेमंद होते हैं، हमेशा चीजों को प्रभावी ढंग से पूरा करने का लक्ष्य रखते हैं।", ur: "ای ایس ٹی جیز مضبوط ارادے والے اور روایتی رہنما ہوتے ہیں۔ وہ انتہائی منظم، عملی اور موثر ہوتے ہیں، منصوبوں اور لوگوں کو سنبھالنے میں بہترین کارکردگی دکھاتے ہیں۔ وہ نظم، روایت اور محنت کو اہمیت دیتے ہیں، اور اکثر اپنی برادریوں کے ستون کے طور پر دیکھے جاتے ہیں۔ ای ایس ٹی جیز فیصلہ کن اور قابل اعتماد ہوتے ہیں، ہمیشہ کاموں کو موثر طریقے سے مکمل کرنے کا ہدف رکھتے ہیں۔" },
+                characteristics: {
+                    en: [
+                        "Organized and efficient",
+                        "Practical and realistic",
+                        "Decisive and direct",
+                        "Strong sense of duty",
+                        "Lead by example"
+                    ],
+                    hi: [
+                        "व्यवस्थित और कुशल",
+                        "व्यावहारिक और यथार्थवादी",
+                        "निर्णायक और सीधा",
+                        "कर्तव्य की प्रबल भावना",
+                        "उदाहरण से नेतृत्व करें"
+                    ],
+                    ur: [
+                        "منظم اور موثر",
+                        "عملی اور حقیقت پسند",
+                        "فیصلہ کن اور براہ راست",
+                        "فرض کا مضبوط احساس",
+                        "مثال سے رہنمائی کریں"
+                    ]
+                }
+            },
+            "ESFJ": {
+                title: { en: "The Consul", hi: "द काउंसल", ur: "دی کونسل" },
+                tagline: { en: "Extraordinarily caring, social and popular people.", hi: "असाधारण रूप से देखभाल करने वाले, सामाजिक और लोकप्रिय लोग।", ur: "غیر معمولی دیکھ بھال کرنے والے، سماجی اور مقبول لوگ۔" },
+                description: { en: "ESFJs are warm and popular social butterflies. They are highly attuned to the emotions of others and strive to create harmony and cooperation in their environments. They are dutiful, responsible, and enjoy serving their communities. ESFJs are excellent at organizing social events and fostering strong relationships.", hi: "ईएसएफजे गर्मजोशी से भरे और लोकप्रिय सामाजिक तितलियाँ होते हैं। वे दूसरों की भावनाओं के प्रति अत्यधिक संवेदनशील होते हैं और अपने वातावरण में सद्भाव और सहयोग बनाने का प्रयास करते हैं। वे कर्तव्यनिष्ठ, जिम्मेदार होते हैं، और अपने समुदायों की सेवा करने का आनंद लेते हैं। ईएसएफजे सामाजिक आयोजनों को व्यवस्थित करने और मजबूत संबंध बनाने में उत्कृष्ट होते हैं।", ur: "ای ایس ایف جیز گرم جوشی اور مقبول سماجی پروانے ہوتے ہیں۔ وہ دوسروں کے جذبات کے ساتھ انتہائی ہم آہنگ ہوتے ہیں اور اپنے ماحول میں ہم آہنگی اور تعاون پیدا کرنے کی کوشش کرتے ہیں۔ وہ فرض شناس، ذمہ دار ہوتے ہیں، اور اپنی برادریوں کی خدمت کرنے سے لطف اندوز ہوتے ہیں۔ ای ایس ایف جیز سماجی تقریبات کو منظم کرنے اور مضبوط تعلقات قائم کرنے میں بہترین ہوتے ہیں۔" },
+                characteristics: {
+                    en: [
+                        "Social and outgoing",
+                        "Caring and supportive",
+                        "Organized and dependable",
+                        "Value harmony",
+                        "Dutiful and conscientious"
+                    ],
+                    hi: [
+                        "बहिर्मुखी और सामाजिक",
+                        "देखभाल करने वाला और सहायक",
+                        "व्यवस्थित और भरोसेमंद",
+                        "सद्भाव को महत्व दें",
+                        "कर्तव्यनिष्ठ और ईमानदार"
+                    ],
+                    ur: [
+                        "دوستانہ اور سماجی",
+                        "دیکھ بھال کرنے والا اور مددگار",
+                        "منظم اور قابل اعتماد",
+                        "ہم آہنگی کو اہمیت دیں",
+                        "فرض شناس اور باضمیر"
+                    ]
+                }
+            },
+            "ENFJ": {
+                title: { en: "The Protagonist", hi: "द प्रोटेगॉनिस्ट", ur: "دی پروٹاگونسٹ" },
+                tagline: { en: "Charismatic and inspiring leaders, able to mesmerize their listeners.", hi: "करिश्माई और प्रेरणादायक नेता, अपने श्रोताओं को मंत्रमुग्ध करने में सक्षम।", ur: "پرکشش اور متاثر کن رہنما، اپنے سننے والوں کو مسحور کرنے کے قابل۔" },
+                description: { en: "ENFJs are charismatic and inspiring leaders. They are natural motivators, driven by a desire to uplift and empower others. They are highly empathetic, intuitive, and possess excellent communication skills, making them adept at connecting with people and fostering positive change. ENFJs are passionate about their beliefs and strive to make a significant impact on the world.", hi: "ईएनएफजे करिश्माई और प्रेरणादायक नेता होते हैं। वे स्वाभाविक प्रेरक होते हैं، जो दूसरों को ऊपर उठाने और सशक्त बनाने की इच्छा से प्रेरित होते हैं। वे अत्यधिक सहानुभूतिपूर्ण, सहज और उत्कृष्ट संचार कौशल रखते हैं، जिससे वे लोगों के साथ जुड़ने और उन्हें प्रेरित करने में कुशल होते हैं। ईएनएफजे अपने विश्वासों के प्रति जुनूनी होते हैं और दुनिया पर महत्वपूर्ण प्रभाव डालने का प्रयास करते हैं۔", ur: "ای این ایف جیز پرکشش اور متاثر کن رہنما ہوتے ہیں۔ وہ قدرتی طور پر حوصلہ افزائی کرنے والے ہوتے ہیں، جو دوسروں کو بلند کرنے اور بااختیار بنانے کی خواہش سے متاثر ہوتے ہیں۔ وہ انتہائی ہمدرد، بدیہی اور بہترین مواصلاتی مہارت رکھتے ہیں، جو انہیں لوگوں سے جڑنے اور مثبت تبدیلی لانے میں ماہر بناتے ہیں۔ ای این ایف جیز اپنے عقائد کے بارے میں پرجوش ہوتے ہیں اور دنیا پر نمایاں اثر ڈالنے کی کوشش کرتے ہیں۔" },
+                characteristics: {
+                    en: [
+                        "Charismatic and inspiring",
+                        "Empathetic and understanding",
+                        "Natural leaders",
+                        "Excellent communicators",
+                        "Focused on positive change"
+                    ],
+                    hi: [
+                        "करिश्माई और प्रेरणादायक",
+                        "सहानुभूतिपूर्ण और समझने वाला",
+                        "स्वाभाविक नेता",
+                        "उत्कृष्ट संचारक",
+                        "सकारात्मक बदलाव पर केंद्रित"
+                    ],
+                    ur: [
+                        "پرکشش اور متاثر کن",
+                        "ہمدرد اور سمجھدار",
+                        "قدرتی رہنما",
+                        "بہترین مواصلاتی",
+                        "مثبت تبدیلی پر توجہ مرکوز"
+                    ]
+                }
+            },
+            "ENTJ": {
+                title: { en: "The Commander", hi: "द कमांडर", ur: "دی کمانڈر" },
+                tagline: { en: "Bold, imaginative and strong-willed leaders, always finding a way – or making one.", hi: "साहसी, कल्पनाशील और दृढ़ इच्छाशक्ति वाले नेता, हमेशा एक रास्ता खोजते हैं - या बनाते हैं।", ur: "دلیر، تصوراتی اور مضبوط ارادے والے رہنما، ہمیشہ ایک راستہ تلاش کرتے ہیں - یا ایک بناتے ہیں۔" },
+                description: { en: "ENTJs are assertive and visionary leaders. They are strategic, logical, and highly organized, naturally taking charge and devising efficient plans. They are driven by ambition and a desire to achieve their goals, inspiring others to follow their lead. ENTJs are decisive and confident, thriving in challenging environments where they can implement their innovative ideas.", hi: "ईएनटीजे मुखर और दूरदर्शी नेता होते हैं। वे रणनीतिक, तार्किक और अत्यधिक व्यवस्थित होते हैं، स्वाभाविक रूप से प्रभार लेते हैं और कुशल योजनाएँ बनाते हैं। वे महत्वाकांक्षा और अपने लक्ष्यों को प्राप्त करने की इच्छा से प्रेरित होते हैं، दूसरों को अपने नेतृत्व का पालन करने के लिए प्रेरित करते हैं। ईएनटीजे निर्णायक और आत्मविश्वासी होते हैं، चुनौतीपूर्ण वातावरण में पनपते हैं जहाँ वे अपने नवीन विचारों को लागू कर सकते हैं।", ur: "ای این ٹی جیز پرعزم اور بصیرت والے رہنما ہوتے ہیں۔ وہ اسٹریٹجک، منطقی اور انتہائی منظم ہوتے ہیں، قدرتی طور پر قیادت کرتے ہیں اور موثر منصوبے بناتے ہیں۔ وہ عزائم اور اپنے اہداف کو حاصل کرنے کی خواہش سے متاثر ہوتے ہیں، دوسروں کو اپنی قیادت کی پیروی کرنے کی ترغیب دیتے ہیں۔ ای این ٹی جیز فیصلہ کن اور پراعتماد ہوتے ہیں، چیلنجنگ ماحول میں کامیاب ہوتے ہیں جہاں وہ اپنے اختراعی خیالات کو نافذ کر سکتے ہیں۔" },
+                characteristics: {
+                    en: [
+                        "Strategic and decisive",
+                        "Confident and assertive",
+                        "Visionary and goal-oriented",
+                        "Logical and efficient",
+                        "Natural leaders"
+                    ],
+                    hi: [
+                        "रणनीतिक और निर्णायक",
+                        "आत्मविश्वासी और मुखर",
+                        "दूरदर्शी और लक्ष्य-उन्मुख",
+                        "तार्किक और कुशल",
+                        "स्वाभाविक नेता"
+                    ],
+                    ur: [
+                        "اسٹریٹجک اور فیصلہ کن",
+                        "بھروسہ مند اور پرعزم",
+                        "بصیرت والا اور ہدف پر مبنی",
+                        "منطقی اور موثر",
+                        "قدرتی رہنما"
+                    ]
+                }
+            },
+            "ESTP": {
+                title: { en: "The Entrepreneur", hi: "द एंटरप्रेन्योर", ur: "دی انٹرپرینیور" },
+                tagline: { en: "Smart, energetic and very perceptive people, who truly enjoy living on the edge.", hi: "स्मार्ट, ऊर्जावान और बहुत समझदार लोग, जो वास्तव में किनारे पर रहना पसंद करते हैं।", ur: "ہوشیار، توانائی بخش اور بہت سمجھدار لوگ، جو واقعی زندگی کے کنارے پر رہنا پسند کرتے ہیں۔" },
+                description: { en: "ESTPs are energetic and charming go-getters. They are spontaneous, action-oriented, and thrive on new experiences and excitement. They are observant and pragmatic, able to quickly assess situations and find practical solutions. ESTPs are often resourceful and persuasive, enjoying being in the spotlight and influencing others.", hi: "ईएसटीपी ऊर्जावान और आकर्षक गो-गेटर होते हैं। वे सहज, कार्य-उन्मुख होते हैं، और नए अनुभवों और उत्साह पर पनपते हैं। वे चौकस और व्यावहारिक होते हैं، स्थितियों का शीघ्रता से आकलन करने और व्यावहारिक समाधान खोजने में सक्षम होते हैं। ईएसटीपी अक्सर साधन संपन्न और प्रेरक होते हैं، सुर्खियों में रहना और दूसरों को प्रभावित करना पसंद करते हैं।", ur: "ای ایس ٹی پیز توانائی بخش اور پرکشش عمل پسند ہوتے ہیں۔ وہ خود بخود، عمل پر مبنی ہوتے ہیں، اور نئے تجربات اور جوش پر کامیاب ہوتے ہیں۔ وہ مشاہدہ کرنے والے اور عملی ہوتے ہیں، حالات کا فوری اندازہ لگانے اور عملی حل تلاش کرنے کے قابل ہوتے ہیں۔ ای ایس ٹی پیز اکثر وسائل والے اور قائل کرنے والے ہوتے ہیں، نمایاں رہنے اور دوسروں کو متاثر کرنے سے لطف اندوز ہوتے ہیں۔" },
+                characteristics: {
+                    en: [
+                        "Energetic and spontaneous",
+                        "Practical and resourceful",
+                        "Observant and adaptable",
+                        "Bold and risk-taking",
+                        "Enjoy being in the spotlight"
+                    ],
+                    hi: [
+                        "ऊर्जावान और सहज",
+                        "व्यावहारिक और साधन संपन्न",
+                        "चौकस और अनुकूलनीय",
+                        "साहसी और जोखिम लेने वाला",
+                        "सुर्खियों में रहना पसंद करें"
+                    ],
+                    ur: [
+                        "توانائی بخش اور خود بخود",
+                        "عملی اور وسائل والا",
+                        "مشاہدہ کرنے والا اور قابل موافق",
+                        "دلیر اور خطرہ مول لینے والا",
+                        "نمایاں رہنے سے لطف اندوز"
+                    ]
+                }
+            },
+            "ESFP": {
+                title: { en: "The Entertainer", hi: "द एंटरटेनर", ur: "دی انٹرٹینر" },
+                tagline: { en: "Spontaneous, energetic and enthusiastic people – life is never boring around them.", hi: "सहज, ऊर्जावान और उत्साही लोग – उनके आसपास जीवन कभी नीरस नहीं होता۔", ur: "خود بخود، توانائی بخش اور پرجوش لوگ – ان کے آس پاس زندگی کبھی بور نہیں ہوتی۔" },
+                description: { en: "ESFPs are lively and enthusiastic entertainers. They are spontaneous, outgoing, and love to be the center of attention. They are highly observant of their surroundings and enjoy bringing joy and excitement to others. ESFPs are adaptable and charming, often excelling in creative and social roles.", hi: "ईएसएफपी जीवंत और उत्साही मनोरंजनकर्ता होते हैं। वे सहज, बहिर्मुखी होते हैं، और ध्यान का केंद्र बनना पसंद करते हैं। वे अपने परिवेश के अत्यधिक चौकस होते हैं और दूसरों को खुशी और उत्साह लाना पसंद करते हैं। ईएसएफपी अनुकूलनीय और आकर्षक होते हैं، अक्सर रचनात्मक और सामाजिक भूमिकाओं में उत्कृष्ट प्रदर्शन करते हैं।", ur: "ای ایس ایف پیز زندہ دل اور پرجوش تفریح کار ہوتے ہیں۔ وہ خود بخود، دوستانہ ہوتے ہیں، اور توجہ کا مرکز بننا پسند کرتے ہیں۔ وہ اپنے ماحول کا انتہائی مشاہدہ کرتے ہیں اور دوسروں کو خوشی اور جوش لانا پسند کرتے ہیں۔ ای ایس ایف پیز قابل موافق اور پرکشش ہوتے ہیں، اکثر تخلیقی اور سماجی کرداروں میں بہترین کارکردگی دکھاتے ہیں۔" },
+                characteristics: {
+                    en: [
+                        "Outgoing and social",
+                        "Spontaneous and fun-loving",
+                        "Optimistic and enthusiastic",
+                        "Observant of details",
+                        "Practical and adaptable"
+                    ],
+                    hi: [
+                        "बहिर्मुखी और सामाजिक",
+                        "सहज और मज़ाकिया",
+                        "आशावादी और उत्साही",
+                        "विवरणों का चौकस",
+                        "व्यावहारिक और अनुकूलनीय"
+                    ],
+                    ur: [
+                        "دوستانہ اور سماجی",
+                        "خود بخود اور تفریحی",
+                        "پر امید اور پرجوش",
+                        "تفصیلات کا مشاہدہ کرنے والا",
+                        "عملی اور قابل موافق"
+                    ]
+                }
+            },
+            "ENFP": {
+                title: { en: "The Campaigner", hi: "द कैंपेनर", ur: "دی کمپینر" },
+                tagline: { en: "Enthusiastic, creative and sociable free spirits, who can always find a reason to smile.", hi: "उत्साही, रचनात्मक और मिलनसार मुक्त आत्माएं, जो हमेशा मुस्कुराने का कारण ढूंढ सकते हैं।", ur: "پرجوش، تخلیقی اور ملنسار آزاد روحیں، جو ہمیشہ مسکرانے کی وجہ تلاش کر سکتے ہیں۔" },
+                description: { en: "ENFPs are enthusiastic and creative free spirits. They are curious, imaginative, and possess a strong desire to explore new ideas and possibilities. They are highly empathetic and possess excellent communication skills, making them adept at connecting with people and inspiring them. ENFPs are passionate about their values and strive to make a positive impact on the world, often through advocacy or creative endeavors.", hi: "ईएनएफपी उत्साही और रचनात्मक मुक्त आत्माएं होते हैं। वे जिज्ञासु, कल्पनाशील और नए विचारों और संभावनाओं का पता लगाने की तीव्र इच्छा रखते हैं। वे अत्यधिक सहानुभूतिपूर्ण और उत्कृष्ट संचार कौशल रखते हैं، जिससे वे लोगों के साथ जुड़ने और उन्हें प्रेरित करने में कुशल होते हैं। ईएनएफपी अपने मूल्यों के प्रति जुनूनी होते हैं और अक्सर वकालत या रचनात्मक प्रयासों के माध्यम से दुनिया पर सकारात्मक प्रभाव डालने का प्रयास करते हैं۔", ur: "ای این ایف پیز پرجوش اور تخلیقی آزاد روحیں ہوتی ہیں۔ وہ متجسس، تصوراتی اور نئے خیالات اور امکانات کو تلاش کرنے کی شدید خواہش رکھتے ہیں۔ وہ انتہائی ہمدرد اور بہترین مواصلاتی مہارت رکھتے ہیں، جو انہیں لوگوں سے جڑنے اور انہیں متاثر کرنے میں ماہر بناتے ہیں۔ ای این ایف پیز اپنی اقدار کے بارے میں پرجوش ہوتے ہیں اور اکثر وکالت یا تخلیقی کوششوں کے ذریعے دنیا پر مثبت اثر ڈالنے کی کوشش کرتے ہیں۔" },
+                characteristics: {
+                    en: [
+                        "Enthusiastic and creative",
+                        "Sociable and charismatic",
+                        "Empathetic and intuitive",
+                        "Optimistic and inspiring",
+                        "Value personal growth"
+                    ],
+                    hi: [
+                        "उत्साही और रचनात्मक",
+                        "मिलनसार और करिश्माई",
+                        "सहानुभूतिपूर्ण और सहज",
+                        "आशावादी और प्रेरणादायक",
+                        "व्यक्तिगत विकास को महत्व दें"
+                    ],
+                    ur: [
+                        "پرجوش اور تخلیقی",
+                        "سماجی اور پرکشش",
+                        "ہمدرد اور بدیہی",
+                        "پر امید اور متاثر کن",
+                        "ذاتی ترقی کو اہمیت دیں"
+                    ]
+                }
+            },
+            "ENTP": {
+                title: { en: "The Debater", hi: "द डिबेटर", ur: "دی ڈیبیٹر" },
+                tagline: { en: "Smart and curious thinkers who cannot resist an intellectual challenge.", hi: "स्मार्ट और जिज्ञासु विचारक जो एक बौद्धिक चुनौती का विरोध नहीं कर सकते।", ur: "ہوشیار اور متجسس مفکرین جو ایک فکری چیلنج کا مقابلہ نہیں کر سکتے۔" },
+                description: { en: "ENTPs are quick-witted and innovative debaters. They are highly intelligent, logical, and enjoy exploring complex ideas and challenging assumptions. They are independent, unconventional, and thrive on intellectual stimulation and debate. ENTPs are excellent at brainstorming and finding creative solutions to problems, often playing the role of the 'devil's advocate' to explore all angles.", hi: "ईएनटीपी तेज-तर्रार और नवीन वाद-विवादकर्ता होते हैं। वे अत्यधिक बुद्धिमान, तार्किक होते हैं، और जटिल विचारों की खोज करने और मान्यताओं को चुनौती देने का आनंद लेते हैं। वे स्वतंत्र, अपरंपरागत होते हैं، और बौद्धिक उत्तेजना और बहस पर पनपते हैं। ईएनटीपी विचार-मंथन करने और समस्याओं के रचनात्मक समाधान खोजने में उत्कृष्ट होते हैं، अक्सर सभी कोणों का पता लगाने के लिए 'शैतान के वकील' की भूमिका निभाते हैं।", ur: "ای این ٹی پیز ذہین اور اختراعی مباحثین ہوتے ہیں۔ وہ انتہائی ذہین، منطقی ہوتے ہیں، اور پیچیدہ خیالات کو تلاش کرنے اور مفروضوں کو چیلنج کرنے سے لطف اندوز ہوتے ہیں۔ وہ آزاد، غیر روایتی ہوتے ہیں، اور فکری محرک اور بحث پر کامیاب ہوتے ہیں۔ ای این ٹی پیز ذہن سازی کرنے اور مسائل کے تخلیقی حل تلاش کرنے میں بہترین ہوتے ہیں، اکثر تمام پہلوؤں کو تلاش کرنے کے لیے 'شیطان کا وکیل' کا کردار ادا کرتے ہیں۔" },
+                characteristics: {
+                    en: [
+                        "Intelligent and analytical",
+                        "Innovative and curious",
+                        "Debate-loving",
+                        "Independent and original",
+                        "Quick-witted and resourceful"
+                    ],
+                    hi: [
+                        "बुद्धिमान और विश्लेषणात्मक",
+                        "नवीन और जिज्ञासु",
+                        "बहस-प्रेमी",
+                        "स्वतंत्र और मूल",
+                        "तेज-तर्रार और साधन संपन्न"
+                    ],
+                    ur: [
+                        "ذہین اور تجزیاتی",
+                        "اختراعی اور متجسس",
+                        "بحث پسند",
+                        "آزاد اور اصلی",
+                        "ذہین اور وسائل والا"
+                    ]
+                }
+            }
+        };
+
+        // questionPool Object for balanced quiz creation
+        const questionPool = {
+            EI: [
+                {
+                    id: 1,
+                    text: { en: "I enjoy being the center of attention.", hi: "मुझे ध्यान का केंद्र बनना पसंद है।", ur: "مجھے توجہ کا مرکز بننا پسند ہے۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "E:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "E:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "I:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "I:2" }
+                    ]
+                },
+                {
+                    id: 2,
+                    text: { en: "I prefer to spend my free time alone or with a few close friends.", hi: "मैं अपना खाली समय अकेले या कुछ करीबी दोस्तों के साथ बिताना पसंद करता हूँ।", ur: "میں اپنا فارغ وقت اکیلے یا چند قریبی دوستوں کے ساتھ گزارنا پسند کرتا ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "I:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "I:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "E:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "E:2" }
+                    ]
+                },
+                {
+                    id: 3,
+                    text: { en: "I feel energized after social gatherings.", hi: "मैं सामाजिक समारोहों के बाद ऊर्जावान महसूस करता हूँ।", ur: "میں سماجی اجتماعات کے بعد توانائی محسوس کرتا ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "E:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "E:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "I:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "I:2" }
+                    ]
+                },
+                {
+                    id: 4,
+                    text: { en: "I often get lost in my own thoughts and imagination.", hi: "मैं अक्सर अपने विचारों और कल्पना में खो जाता हूँ।", ur: "میں اکثر اپنے خیالات اور تخیل میں گم ہو جاتا ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "I:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "I:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "E:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "E:2" }
+                    ]
+                },
+                {
+                    id: 5,
+                    text: { en: "I find it easy to strike up conversations with strangers.", hi: "मुझे अजनबियों से बातचीत शुरू करना आसान लगता है।", ur: "مجھے اجنبیوں سے بات چیت شروع کرنا آسان لگتا ہے۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "E:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "E:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "I:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "I:2" }
+                    ]
+                },
+                {
+                    id: 6,
+                    text: { en: "I prefer deep conversations over small talk.", hi: "मैं छोटी-मोटी बातों की बजाय गहरी बातचीत पसंद करता हूँ।", ur: "میں چھوٹی باتوں کے بجائے گہری گفتگو کو ترجیح دیتا ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "I:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "I:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "E:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "E:2" }
+                    ]
+                },
+                {
+                    id: 7,
+                    text: { en: "I am comfortable working in a team or group setting.", hi: "मैं एक टीम या समूह सेटिंग में काम करने में सहज हूँ।", ur: "میں ایک ٹیم یا گروپ میں کام کرنے میں آرام دہ ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "E:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "E:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "I:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "I:2" }
+                    ]
+                }
+            ],
+            SN: [
+                {
+                    id: 8,
+                    text: { en: "I pay more attention to practical details than possibilities.", hi: "मैं संभावनाओं की तुलना में व्यावहारिक विवरणों पर अधिक ध्यान देता हूँ।", ur: "میں امکانات کے بجائے عملی تفصیلات پر زیادہ توجہ دیتا ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "S:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "S:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "N:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "N:2" }
+                    ]
+                },
+                {
+                    id: 9,
+                    text: { en: "I am more interested in future possibilities than past experiences.", hi: "मुझे पिछली अनुभवों की तुलना में भविष्य की संभावनाओं में अधिक रुचि है।", ur: "مجھے ماضی کے تجربات کے بجائے مستقبل کے امکانات میں زیادہ دلچسپی ہے۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "N:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "N:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "S:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "S:2" }
+                    ]
+                },
+                {
+                    id: 10,
+                    text: { en: "I tend to trust facts and data more than intuition.", hi: "मैं अंतर्ज्ञान की तुलना में तथ्यों और डेटा पर अधिक भरोसा करता हूँ।", ur: "میں وجدان کے بجائے حقائق اور ڈیٹا پر زیادہ بھروسہ کرتا ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "S:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "S:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "N:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "N:2" }
+                    ]
+                },
+                {
+                    id: 11,
+                    text: { en: "I enjoy thinking about abstract concepts and theories.", hi: "मुझे अमूर्त अवधारणाओं और सिद्धांतों के बारे में सोचना पसंद है।", ur: "مجھے تجریدی تصورات اور نظریات کے بارے میں سوچنا پسند ہے۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "N:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "N:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "S:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "S:2" }
+                    ]
+                },
+                {
+                    id: 12,
+                    text: { en: "I am more interested in 'what is' than 'what could be'.", hi: "मुझे 'क्या है' की तुलना में 'क्या हो सकता है' में अधिक रुचि है।", ur: "مجھے 'کیا ہے' کے بجائے 'کیا ہو سکتا ہے' میں زیادہ دلچسپی ہے۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "S:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "S:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "N:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "N:2" }
+                    ]
+                },
+                {
+                    id: 13,
+                    text: { en: "I like to explore new and unconventional ideas.", hi: "मुझे नए और अपरंपरागत विचारों का पता लगाना पसंद है।", ur: "मुझे نئے اور غیر روایتی خیالات کی تلاش کرنا پسند ہے۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "N:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "N:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "S:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "S:2" }
+                    ]
+                },
+                {
+                    id: 14,
+                    text: { en: "I rely on my past experiences to guide my decisions.", hi: "मैं अपने निर्णयों का मार्गदर्शन करने के लिए अपने पिछले अनुभवों पर निर्भर रहता हूँ।", ur: "میں اپنے فیصلوں کی رہنمائی کے لیے اپنے ماضی کے تجربات پر انحصار کرتا ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "S:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "S:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "N:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "N:2" }
+                    ]
+                }
+            ],
+            TF: [
+                {
+                    id: 15,
+                    text: { en: "I make decisions based on logic and objective analysis.", hi: "मैं तर्क और वस्तुनिष्ठ विश्लेषण के आधार पर निर्णय लेता हूँ।", ur: "میں منطق اور معروضی تجزیہ کی بنیاد پر فیصلے کرتا ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "T:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "T:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "F:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "F:2" }
+                    ]
+                },
+                {
+                    id: 16,
+                    text: { en: "I consider other people's feelings before making decisions.", hi: "निर्णय लेने से पहले मैं अन्य लोगों की भावनाओं पर विचार करता हूँ।", ur: "فیصلے کرنے سے پہلے میں دوسرے لوگوں کے جذبات کو مدنظر رکھتا ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "F:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "F:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "T:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "T:2" }
+                    ]
+                },
+                {
+                    id: 17,
+                    text: { en: "I value fairness and justice above all else.", hi: "मैं सबसे बढ़कर निष्पक्षता और न्याय को महत्व देता हूँ।", ur: "میں ہر چیز سے بڑھ کر انصاف اور عدل کو اہمیت دیتا ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "T:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "T:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "F:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "F:2" }
+                    ]
+                },
+                {
+                    id: 18,
+                    text: { en: "I am often described as warm and compassionate.", hi: "मुझे अक्सर गर्मजोशी और दयालु बताया जाता है।", ur: "مجھے اکثر گرم جوشی اور ہمدرد بتایا جاتا ہے۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "F:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "F:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "T:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "T:2" }
+                    ]
+                },
+                {
+                    id: 19,
+                    text: { en: "I prefer to analyze situations logically rather than emotionally.", hi: "मैं भावनात्मक रूप से सोचने के बजाय तार्किक रूप से स्थितियों का विश्लेषण करना पसंद करता हूँ।", ur: "میں جذباتی طور پر سوچنے کے بجائے منطقی طور پر حالات کا تجزیہ کرنا پسند کرتا ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "T:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "T:1" },
+                        { text: { en: "Disagree", ur: "असहमत", ur: "اختلاف" }, value: "F:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "F:2" }
+                    ]
+                },
+                {
+                    id: 20,
+                    text: { en: "I find it easy to empathize with others' feelings.", hi: "मुझे दूसरों की भावनाओं के साथ सहानुभूति रखना आसान लगता है।", ur: "مجھے دوسروں کے جذبات سے ہمدردی رکھنا آسان لگتا ہے۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "F:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "F:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "T:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "T:2" }
+                    ]
+                },
+                {
+                    id: 21,
+                    text: { en: "I am more concerned with objective truth than subjective harmony.", hi: "मैं व्यक्तिपरक सद्भाव की तुलना में वस्तुनिष्ठ सत्य से अधिक चिंतित हूँ।", ur: "میں معروضی سچائی سے زیادہ فکری ہم آہنگی سے متعلق ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "T:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "T:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "F:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "F:2" }
+                    ]
+                },
+                {
+                    id: 22,
+                    text: { en: "I often make decisions based on what feels right in my heart.", hi: "मैं अक्सर अपने दिल में जो सही लगता है, उसके आधार पर निर्णय लेता हूँ۔", ur: "میں اکثر اپنے دل میں جو صحیح محسوس ہوتا ہے، اس کی بنیاد پر فیصلے کرتا ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "F:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "F:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "T:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "T:2" }
+                    ]
+                }
+            ],
+            JP: [
+                {
+                    id: 23,
+                    text: { en: "I prefer to have a clear plan and stick to it.", hi: "मैं एक स्पष्ट योजना बनाना और उस पर टिके रहना पसंद करता हूँ।", ur: "میں ایک واضح منصوبہ بنانا اور اس پر قائم رہنا پسند کرتا ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "J:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "J:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "P:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "P:2" }
+                    ]
+                },
+                {
+                    id: 24,
+                    text: { en: "I enjoy keeping my options open and being spontaneous.", hi: "मैं अपने विकल्पों को खुला रखना और सहज रहना पसंद करता हूँ۔", ur: "میں اپنے اختیارات کو کھلا رکھنا اور خود بخود رہنا پسند کرتا ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "P:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "P:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "J:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "J:2" }
+                    ]
+                },
+                {
+                    id: 25,
+                    text: { en: "I feel more comfortable when things are decided and settled.", hi: "जब चीजें तय और व्यवस्थित होती हैं तो मैं अधिक सहज महसूस करता हूँ।", ur: "جب چیزیں طے شدہ اور منظم ہوتی ہیں تو مجھے زیادہ آرام دہ محسوس ہوتا ہے۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "J:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "J:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "P:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "P:2" }
+                    ]
+                },
+                {
+                    id: 26,
+                    text: { en: "I often make decisions on the fly, without much prior planning.", hi: "मैं अक्सर बिना किसी पूर्व योजना के तुरंत निर्णय लेता हूँ।", ur: "میں اکثر بغیر کسی پیشگی منصوبہ بندی کے فوری فیصلے کرتا ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "P:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "P:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "J:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "J:2" }
+                    ]
+                },
+                {
+                    id: 27,
+                    text: { en: "I like to finish one project before starting another.", hi: "मैं दूसरा शुरू करने से पहले एक परियोजना खत्म करना पसंद करता हूँ۔", ur: "میں دوسرا شروع کرنے سے پہلے ایک پروجیکٹ مکمل کرنا پسند کرتا ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "J:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "J:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "P:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "P:2" }
+                    ]
+                },
+                {
+                    id: 28,
+                    text: { en: "I am comfortable adapting to new situations as they arise.", hi: "मैं नई परिस्थितियों के उत्पन्न होने पर उनसे अनुकूलन करने में सहज हूँ।", ur: "میں نئی ​​صورتحالوں کے پیدا ہونے پر ان سے مطابقت پیدا کرنے میں آرام دہ ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "P:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "P:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "J:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "J:2" }
+                    ]
+                },
+                {
+                    id: 29,
+                    text: { en: "I prefer to organize my life and work in a structured way.", hi: "मैं अपने जीवन और काम को एक संरचित तरीके से व्यवस्थित करना पसंद करता हूँ।", ur: "میں اپنی زندگی اور کام کو منظم طریقے سے ترتیب دینا پسند کرتا ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "J:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "J:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "P:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "P:2" }
+                    ]
+                },
+                {
+                    id: 30,
+                    text: { en: "I am generally flexible and open to last-minute changes.", hi: "मैं आमतौर पर लचीला और अंतिम समय में होने वाले परिवर्तनों के लिए खुला रहता हूँ।", ur: "میں عموماً لچکدار اور آخری لمحات کی تبدیلیوں کے لیے کھلا رہتا ہوں۔" },
+                    options: [
+                        { text: { en: "Strongly Agree", hi: "दृढ़ता से सहमत", ur: "مکمل طور پر متفق" }, value: "P:2" },
+                        { text: { en: "Agree", hi: "सहमत", ur: "متفق" }, value: "P:1" },
+                        { text: { en: "Disagree", hi: "असहमत", ur: "اختلاف" }, value: "J:1" },
+                        { text: { en: "Strongly Disagree", hi: "दृढ़ता से असहमत", ur: "مکمل طور پر اختلاف" }, value: "J:2" }
+                    ]
+                }
+            ]
+        };
+
+        let currentLang = 'hi';
+        let currentQuestionIndex = 0;
+        let TOTAL_QUESTIONS = 0;
+        let userResult = {};
+        let selectedQuestions = [];
+        let scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+
+        const elementsToTranslate = [
+            { selector: 'title', attribute: 'data-i18n-key' },
+            { selector: 'h1', attribute: 'data-i18n-key' },
+            { selector: 'p[data-i18n-key="header_subtitle"]', attribute: 'data-i18n-key' },
+            { selector: 'h2[data-i18n-key="start_title"]', attribute: 'data-i18n-key' },
+            { selector: 'p[data-i18n-key="start_desc"]', attribute: 'data-i18n-key' },
+            { selector: 'p[data-i18n-key="start_select_label"]', attribute: 'data-i18n-key' },
+            { selector: 'button[onclick="startQuiz(10)"] span', attribute: 'data-i18n-key' },
+            { selector: 'button[onclick="startQuiz(20)"] span', attribute: 'data-i18n-key' },
+            { selector: 'button[onclick="startQuiz(30)"] span', attribute: 'data-i18n-key' },
+            { selector: '#resultBtnContainer button', attribute: 'data-i18n-key' },
+            { selector: 'h2[data-i18n-key="result_heading"]', attribute: 'data-i18n-key' },
+            { selector: 'h3[data-i18n-key="share_section_heading"]', attribute: 'data-i18n-key' },
+            { selector: '#userName', attribute: 'data-i18n-placeholder-key', type: 'placeholder' },
+            { selector: '#shareBtn span', attribute: 'data-i18n-key' },
+            { selector: 'button[onclick="resetQuiz()"]', attribute: 'data-i18n-key' }
+        ];
+
+        function setLanguage(lang) {
+            if (currentQuestionIndex > 0 && confirm(i18n[currentLang].alert_confirm_lang_change)) {
+                // User confirmed, proceed with language change and reset
+            } else if (currentQuestionIndex > 0) {
+                // User cancelled, don't change language
+                return;
+            }
+            currentLang = lang;
+            document.documentElement.lang = lang;
+
+            elementsToTranslate.forEach(item => {
+                const element = document.querySelector(item.selector);
+                if (element) {
+                    if (item.type === 'placeholder') {
+                        const key = element.getAttribute(item.attribute);
+                        if (i18n[currentLang] && i18n[currentLang][key]) {
+                            element.placeholder = i18n[currentLang][key];
+                        }
+                    } else {
+                        const key = element.getAttribute(item.attribute);
+                        if (i18n[currentLang] && i18n[currentLang][key]) {
+                            element.textContent = i18n[currentLang][key];
+                        }
+                    }
+                }
+            });
+
+            // Update question options dynamically if quiz questions are displayed
+            if (document.getElementById('quizForm').classList.contains('active')) {
+                generateQuestionsHTML(); // Regenerate quiz HTML with new language
+                // Re-apply answers if any were already selected
+                const questionBlocks = document.querySelectorAll('.question-block');
+                questionBlocks.forEach((block, index) => {
+                    const selectedOption = block.querySelector('input[type="radio"]:checked');
+                    if (selectedOption) {
+                        const qId = parseInt(block.getAttribute('data-question-id'));
+                        const question = selectedQuestions.find(q => q.id === qId);
+                        if (question) {
+                            const optionIndex = question.options.findIndex(opt => opt.value === selectedOption.value);
+                            if (optionIndex !== -1) {
+                                // Update the label text with the new language
+                                const label = block.querySelector(`label[for="${selectedOption.id}"]`);
+                                if (label) {
+                                    label.textContent = question.options[optionIndex].text[currentLang];
+                                }
+                            }
+                        }
+                    }
+                });
+                // Ensure the current active question is shown correctly
+                document.querySelectorAll('.question-block').forEach((block, idx) => {
+                    if (idx === currentQuestionIndex) {
+                        block.style.display = 'block';
+                        block.classList.add('active');
+                    } else {
+                        block.style.display = 'none';
+                        block.classList.remove('active');
+                    }
+                });
+            }
+
+            // Update language switcher active class
+            document.getElementById('lang-hi').classList.remove('active');
+            document.getElementById('lang-en').classList.remove('active');
+            document.getElementById('lang-ur').classList.add('active'); // Changed to explicitly set Urdu active
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            // Reset quiz to ensure fresh start with new language
+            if (currentQuestionIndex > 0) { // Only reset if quiz was in progress
+                resetQuiz();
+            }
+        }
+
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+                section.style.display = 'none';
+            });
+            const section = document.getElementById(id);
+            if (section) {
+                section.style.display = 'block';
+                setTimeout(() => section.classList.add('active'), 10); // Small delay for fade-in effect
+            }
+        }
+
+        function resetQuiz() {
+            currentQuestionIndex = 0;
+            TOTAL_QUESTIONS = 0;
+            userResult = {};
+            selectedQuestions = [];
+            scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+
+            document.getElementById('quizForm').innerHTML = '';
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('progressBar').setAttribute('data-label', '0%');
+            document.getElementById('userName').value = '';
+
+            showSection('start-screen');
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('resultBtnContainer').style.display = 'none';
+        }
+
+        function triggerConfetti() {
+            const defaults = {
+                spread: 360,
+                ticks: 50,
+                gravity: 0,
+                decay: 0.94,
+                startVelocity: 30,
+                colors: ['#6a11cb', '#2575fc', '#ffffff', '#e8f9fd']
+            };
+
+            function shoot() {
+                confetti({
+                    ...defaults,
+                    particleCount: 80,
+                    scalar: 1.2,
+                    shapes: ['star']
+                });
+
+                confetti({
+                    ...defaults,
+                    particleCount: 50,
+                    scalar: 0.75,
+                    shapes: ['circle']
+                });
+            }
+
+            setTimeout(shoot, 0);
+            setTimeout(shoot, 100);
+            setTimeout(shoot, 200);
+        }
+
+        function prepareQuiz(numQuestions) {
+            TOTAL_QUESTIONS = numQuestions;
+            selectedQuestions = [];
+            scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 }; // Reset scores
+
+            const ei = [...questionPool.EI];
+            const sn = [...questionPool.SN];
+            const tf = [...questionPool.TF];
+            const jp = [...questionPool.JP];
+
+            // Shuffle questions within each category
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+            shuffleArray(ei);
+            shuffleArray(sn);
+            shuffleArray(tf);
+            shuffleArray(jp);
+
+            switch (numQuestions) {
+                case 10:
+                    selectedQuestions = [
+                        ...ei.slice(0, 2),
+                        ...sn.slice(0, 2),
+                        ...tf.slice(0, 3),
+                        ...jp.slice(0, 3)
+                    ];
+                    break;
+                case 20:
+                    selectedQuestions = [
+                        ...ei.slice(0, 5),
+                        ...sn.slice(0, 5),
+                        ...tf.slice(0, 5),
+                        ...jp.slice(0, 5)
+                    ];
+                    break;
+                case 30:
+                    selectedQuestions = [
+                        ...ei,
+                        ...sn,
+                        ...tf,
+                        ...jp
+                    ];
+                    break;
+            }
+
+            // Shuffle all selected questions to mix categories
+            shuffleArray(selectedQuestions);
+            generateQuestionsHTML();
+        }
+
+        function generateQuestionsHTML() {
+            const quizForm = document.getElementById('quizForm');
+            quizForm.innerHTML = ''; // Clear previous questions
+            selectedQuestions.forEach((q, index) => {
+                const questionBlock = document.createElement('div');
+                questionBlock.classList.add('question-block');
+                questionBlock.setAttribute('data-question-id', q.id); // Add data attribute for easier identification
+                questionBlock.style.display = 'none'; // Hide all initially
+                if (index === 0) {
+                    questionBlock.classList.add('active'); // Show the first one
+                    questionBlock.style.display = 'block';
+                }
+
+                questionBlock.innerHTML = `
+                    <h3>${q.text[currentLang]}</h3>
+                    <div class="options-container" onchange="handleAnswer(${index})">
+                        ${q.options.map((option, optIndex) => `
+                            <input type="radio" id="q${q.id}_opt${optIndex}" name="question${q.id}" value="${option.value}">
+                            <label for="q${q.id}_opt${optIndex}">${option.text[currentLang]}</label>
+                        `).join('')}
+                    </div>
+                `;
+                quizForm.appendChild(questionBlock);
+            });
+        }
+
+        function startQuiz(numQuestions) {
+            prepareQuiz(numQuestions);
+            showSection('quizForm');
+            document.getElementById('progressContainer').style.display = 'block';
+            document.getElementById('resultBtnContainer').style.display = 'none';
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('progressBar').setAttribute('data-label', '0%');
+            currentQuestionIndex = 0; // Reset index for a new quiz
+            document.querySelectorAll('.question-block').forEach((block, index) => {
+                block.classList.remove('active');
+                block.style.display = 'none';
+            });
+            if (document.querySelector('.question-block')) {
+                document.querySelector('.question-block').classList.add('active');
+                document.querySelector('.question-block').style.display = 'block';
+            }
+        }
+
+        function handleAnswer(questionNumber) {
+            const currentBlock = document.querySelectorAll('.question-block')[questionNumber];
+            const selectedOption = currentBlock.querySelector(`input[name="question${selectedQuestions[questionNumber].id}"]:checked`);
+
+            if (selectedOption) {
+                // Disable inputs to prevent re-answering
+                currentBlock.querySelectorAll('input[type="radio"]').forEach(input => input.disabled = true);
+
+                // Update progress bar
+                const progress = ((questionNumber + 1) / TOTAL_QUESTIONS) * 100;
+                document.getElementById('progressBar').style.width = `${progress}%`;
+                document.getElementById('progressBar').setAttribute('data-label', `${Math.round(progress)}%`);
+
+                setTimeout(() => {
+                    currentBlock.classList.remove('active');
+                    currentBlock.style.display = 'none';
+
+                    if (questionNumber < TOTAL_QUESTIONS - 1) {
+                        currentQuestionIndex = questionNumber + 1;
+                        const nextBlock = document.querySelectorAll('.question-block')[currentQuestionIndex];
+                        nextBlock.style.display = 'block';
+                        nextBlock.classList.add('active');
+                    } else {
+                        // Last question answered
+                        document.getElementById('progressContainer').style.display = 'none';
+                        document.getElementById('resultBtnContainer').classList.add('active');
+                        document.getElementById('resultBtnContainer').style.display = 'block';
+                    }
+                }, 400); // Small delay for transition effect
+            }
+        }
+
+
+        function calculateResult() {
+            let allAnswered = true;
+            document.querySelectorAll('.question-block').forEach((block, index) => {
+                const selectedOption = block.querySelector(`input[name="question${selectedQuestions[index].id}"]:checked`);
+                if (!selectedOption) {
+                    allAnswered = false;
+                } else {
+                    const [trait, points] = selectedOption.value.split(':');
+                    scores[trait] += parseInt(points);
+                }
+            });
+
+            if (!allAnswered) {
+                alert(i18n[currentLang].alert_answer_all_questions);
+                return;
+            }
+
+            const e_i = (scores.E >= scores.I) ? 'E' : 'I';
+            const s_n = (scores.S >= scores.N) ? 'S' : 'N';
+            const t_f = (scores.T >= scores.F) ? 'T' : 'F';
+            const j_p = (scores.J >= scores.P) ? 'J' : 'P';
+
+            const personalityType = e_i + s_n + t_f + j_p;
+            userResult.type = personalityType;
+            userResult.details = personalityTypes[personalityType];
+
+            document.getElementById('result-type').textContent = userResult.type;
+            document.getElementById('result-title').textContent = userResult.details.title[currentLang];
+            document.getElementById('result-tagline').textContent = userResult.details.tagline[currentLang];
+            document.getElementById('result-desc').textContent = userResult.details.description[currentLang];
+
+            const charsList = document.querySelector('#result-chars ul');
+            charsList.innerHTML = '';
+            userResult.details.characteristics[currentLang].forEach(char => {
+                const li = document.createElement('li');
+                li.textContent = char;
+                charsList.appendChild(li);
+            });
+
+            showSection('result');
+            document.getElementById('quizForm').classList.remove('active');
+            document.getElementById('quizForm').style.display = 'none';
+            document.getElementById('resultBtnContainer').classList.remove('active');
+            document.getElementById('resultBtnContainer').style.display = 'none';
+            triggerConfetti();
+        }
+
+        function shareOnWhatsApp() {
+            const userName = document.getElementById('userName').value.trim();
+            const type = userResult.type;
+            const title = userResult.details.title[currentLang];
+            const tagline = userResult.details.tagline[currentLang];
+            let message;
+
+            if (userName) {
+                message = i18n[currentLang].whatsapp_share_message_name(userName, type, title, tagline);
+            } else {
+                message = i18n[currentLang].whatsapp_share_message_noname(type, title, tagline);
+            }
+
+            // The link will now use window.location.href, which is the current page's URL
+            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setLanguage('ur'); // Set initial language to Urdu as per request
+            // Ensure only start screen is visible initially
+            showSection('start-screen');
+        });
+    </script>
+</body>
+<script async="async" data-cfasync="false" src="//pl27178129.profitableratecpm.com/5f9ea90236f6ae11f07481a4dc4d2ccb/invoke.js"></script> <div id="container-5f9ea90236f6ae11f07481a4dc4d2ccb"></div>
+</html>
